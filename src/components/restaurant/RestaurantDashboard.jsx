@@ -390,6 +390,38 @@ const DashboardContent = () => {
     const [wastageData, setWastageData] = useState([]);
     const [reservations, setReservations] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [selectedOrder, setSelectedOrder] = useState(null);
+    const [showViewModal, setShowViewModal] = useState(false);
+    const [showUpdateModal, setShowUpdateModal] = useState(false);
+
+    // Handler functions for order actions
+    const handleViewOrder = (order) => {
+        setSelectedOrder(order);
+        setShowViewModal(true);
+    };
+
+    const handleUpdateOrder = (order) => {
+        setSelectedOrder(order);
+        setShowUpdateModal(true);
+    };
+
+    const handleUpdateOrderStatus = async (orderId, newStatus) => {
+        try {
+            const token = localStorage.getItem('token');
+            await axios.put(`/api/restaurant-orders/update/${orderId}`, 
+                { status: newStatus },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            
+            // Update local state
+            setOrders(prev => prev.map(order => 
+                order._id === orderId ? { ...order, status: newStatus } : order
+            ));
+            setShowUpdateModal(false);
+        } catch (error) {
+            console.error('Error updating order:', error);
+        }
+    };
 
     // --- (The original fetchDashboardData logic remains unchanged) ---
     useEffect(() => {
@@ -879,12 +911,20 @@ const DashboardContent = () => {
                                                     {new Date(order.createdAt).toLocaleTimeString()}
                                                 </td>
                                                 <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                    <button className="text-blue-600 hover:text-blue-800 mr-3">
-                                                        View
-                                                    </button>
-                                                    <button className="text-green-600 hover:text-green-800">
-                                                        Update
-                                                    </button>
+                                                    <div className="flex space-x-2">
+                                                        <button 
+                                                            onClick={() => handleViewOrder(order)}
+                                                            className="text-blue-600 hover:text-blue-800 font-medium px-2 py-1 rounded hover:bg-blue-50 transition-colors"
+                                                        >
+                                                            View
+                                                        </button>
+                                                        <button 
+                                                            onClick={() => handleUpdateOrder(order)}
+                                                            className="text-green-600 hover:text-green-800 font-medium px-2 py-1 rounded hover:bg-green-50 transition-colors"
+                                                        >
+                                                            Update
+                                                        </button>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         ))
@@ -1248,6 +1288,125 @@ const DashboardContent = () => {
                     </div>
                 </div>
             </div>
+
+            {/* View Order Modal */}
+            {showViewModal && selectedOrder && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+                        <div className="p-6">
+                            <div className="flex justify-between items-center mb-4">
+                                <h3 className="text-xl font-bold text-gray-800">Order Details</h3>
+                                <button 
+                                    onClick={() => setShowViewModal(false)}
+                                    className="text-gray-500 hover:text-gray-700"
+                                >
+                                    ✕
+                                </button>
+                            </div>
+                            <div className="space-y-4">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="text-sm font-medium text-gray-600">Order ID</label>
+                                        <p className="text-gray-800">#{selectedOrder._id.slice(-6)}</p>
+                                    </div>
+                                    <div>
+                                        <label className="text-sm font-medium text-gray-600">Table Number</label>
+                                        <p className="text-gray-800">Table {selectedOrder.tableNumber || 'N/A'}</p>
+                                    </div>
+                                    <div>
+                                        <label className="text-sm font-medium text-gray-600">Order Type</label>
+                                        <p className="text-gray-800">{selectedOrder.orderType || 'Regular'}</p>
+                                    </div>
+                                    <div>
+                                        <label className="text-sm font-medium text-gray-600">Status</label>
+                                        <span className={`px-2 py-1 text-xs font-medium rounded-full 
+                                            ${selectedOrder.status === 'new' ? 'bg-blue-100 text-blue-800' :
+                                              selectedOrder.status === 'preparing' ? 'bg-yellow-100 text-yellow-800' :
+                                              selectedOrder.status === 'ready' ? 'bg-green-100 text-green-800' :
+                                              'bg-purple-100 text-purple-800'}`}>
+                                            {selectedOrder.status}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <label className="text-sm font-medium text-gray-600">Amount</label>
+                                        <p className="text-gray-800">₹{selectedOrder.amount?.toFixed(2) || '0.00'}</p>
+                                    </div>
+                                    <div>
+                                        <label className="text-sm font-medium text-gray-600">Created At</label>
+                                        <p className="text-gray-800">{new Date(selectedOrder.createdAt).toLocaleString()}</p>
+                                    </div>
+                                </div>
+                                {selectedOrder.items && selectedOrder.items.length > 0 && (
+                                    <div>
+                                        <label className="text-sm font-medium text-gray-600 mb-2 block">Order Items</label>
+                                        <div className="bg-gray-50 rounded-lg p-4">
+                                            {selectedOrder.items.map((item, index) => (
+                                                <div key={index} className="flex justify-between items-center py-2 border-b border-gray-200 last:border-b-0">
+                                                    <div>
+                                                        <p className="font-medium">{item.name}</p>
+                                                        <p className="text-sm text-gray-600">Qty: {item.quantity}</p>
+                                                    </div>
+                                                    <p className="font-medium">₹{(item.price * item.quantity).toFixed(2)}</p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Update Order Modal */}
+            {showUpdateModal && selectedOrder && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-xl shadow-xl max-w-md w-full mx-4">
+                        <div className="p-6">
+                            <div className="flex justify-between items-center mb-4">
+                                <h3 className="text-xl font-bold text-gray-800">Update Order Status</h3>
+                                <button 
+                                    onClick={() => setShowUpdateModal(false)}
+                                    className="text-gray-500 hover:text-gray-700"
+                                >
+                                    ✕
+                                </button>
+                            </div>
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="text-sm font-medium text-gray-600">Order ID</label>
+                                    <p className="text-gray-800">#{selectedOrder._id.slice(-6)}</p>
+                                </div>
+                                <div>
+                                    <label className="text-sm font-medium text-gray-600">Current Status</label>
+                                    <p className="text-gray-800 capitalize">{selectedOrder.status}</p>
+                                </div>
+                                <div>
+                                    <label className="text-sm font-medium text-gray-600 mb-2 block">Update Status</label>
+                                    <div className="space-y-2">
+                                        {['new', 'preparing', 'ready', 'completed'].map(status => (
+                                            <button
+                                                key={status}
+                                                onClick={() => handleUpdateOrderStatus(selectedOrder._id, status)}
+                                                className={`w-full text-left px-4 py-2 rounded-lg border transition-colors
+                                                    ${selectedOrder.status === status 
+                                                        ? 'bg-blue-50 border-blue-200 text-blue-800' 
+                                                        : 'bg-white border-gray-200 hover:bg-gray-50'}`}
+                                                disabled={selectedOrder.status === status}
+                                            >
+                                                <span className="capitalize font-medium">{status}</span>
+                                                {selectedOrder.status === status && (
+                                                    <span className="text-xs text-blue-600 ml-2">(Current)</span>
+                                                )}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

@@ -80,7 +80,7 @@ const InputWithIcon = ({
       onChange={onChange}
       className={`pl-10 pr-4 py-2 w-full ${
         inputClassName ||
-        "bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        "bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-[hsl(45,70%,50%)] focus:border-[hsl(45,70%,50%)]"
       } ${className}`}
       required={required}
       min={min}
@@ -139,7 +139,7 @@ const Input = ({
     placeholder={placeholder}
     value={value}
     onChange={onChange}
-    className={`flex h-9 w-full rounded-md border border-gray-300 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:cursor-not-allowed disabled:opacity-50 min-w-0 ${className}`}
+    className={`flex h-9 w-full rounded-md border border-gray-300 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus:ring-2 focus:ring-[hsl(45,70%,50%)] focus:border-[hsl(45,70%,50%)] disabled:cursor-not-allowed disabled:opacity-50 min-w-0 ${className}`}
     {...props}
   />
 );
@@ -165,7 +165,7 @@ const Select = ({
     value={value}
     onChange={onChange}
     name={name}
-    className={`flex h-9 w-full items-center justify-between rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:cursor-not-allowed disabled:opacity-50 truncate ${className}`}
+    className={`flex h-9 w-full items-center justify-between rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm shadow-sm focus:ring-2 focus:ring-[hsl(45,70%,50%)] focus:border-[hsl(45,70%,50%)] disabled:cursor-not-allowed disabled:opacity-50 truncate ${className}`}
     {...props}
   >
     {children}

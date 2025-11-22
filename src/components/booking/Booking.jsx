@@ -24,6 +24,13 @@ const BookingEdit = ({ booking, onSave, onCancel }) => {
     noOfAdults: booking?.noOfAdults || 1,
     noOfChildren: booking?.noOfChildren || 0,
     rate: booking?.rate || 0,
+    taxableAmount: booking?.taxableAmount || 0,
+    cgstAmount: booking?.cgstAmount || 0,
+    sgstAmount: booking?.sgstAmount || 0,
+    cgstRate: booking?.cgstRate || 0.025,
+    sgstRate: booking?.sgstRate || 0.025,
+    taxIncluded: booking?.taxIncluded || false,
+    serviceCharge: booking?.serviceCharge || false,
     paymentMode: booking?.paymentMode || "",
     paymentStatus: booking?.paymentStatus || "Pending",
     vip: booking?.vip || false,
@@ -49,7 +56,7 @@ const BookingEdit = ({ booking, onSave, onCancel }) => {
   };
 
   return (
-    <div className="p-6 rounded-lg shadow-xl w-full max-w-4xl" style={{ backgroundColor: 'hsl(45, 100%, 95%)' }}>
+    <div className="p-6 rounded-lg shadow-xl w-full max-w-4xl bg-white">
       <h3 className="text-2xl font-bold mb-4 text-center" style={{ color: 'hsl(45, 100%, 20%)' }}>
         Edit Booking: {booking?.name}
       </h3>
@@ -121,6 +128,34 @@ const BookingEdit = ({ booking, onSave, onCancel }) => {
         <div>
           <label className="block font-semibold mb-2" style={{ color: 'hsl(45, 100%, 20%)' }}>Rate</label>
           <input type="number" name="rate" value={formData.rate} onChange={handleChange} className="w-full p-2 rounded-lg focus:outline-none focus:ring-2" style={{ border: '1px solid hsl(45, 100%, 85%)', focusRingColor: 'hsl(45, 43%, 58%)' }} />
+        </div>
+        <div>
+          <label className="block font-semibold mb-2" style={{ color: 'hsl(45, 100%, 20%)' }}>Taxable Amount</label>
+          <input type="number" name="taxableAmount" value={formData.taxableAmount} onChange={handleChange} className="w-full p-2 rounded-lg focus:outline-none focus:ring-2" style={{ border: '1px solid hsl(45, 100%, 85%)', focusRingColor: 'hsl(45, 43%, 58%)' }} />
+        </div>
+        <div>
+          <label className="block font-semibold mb-2" style={{ color: 'hsl(45, 100%, 20%)' }}>CGST Amount</label>
+          <input type="number" name="cgstAmount" value={formData.cgstAmount} onChange={handleChange} className="w-full p-2 rounded-lg focus:outline-none focus:ring-2" style={{ border: '1px solid hsl(45, 100%, 85%)', focusRingColor: 'hsl(45, 43%, 58%)' }} />
+        </div>
+        <div>
+          <label className="block font-semibold mb-2" style={{ color: 'hsl(45, 100%, 20%)' }}>SGST Amount</label>
+          <input type="number" name="sgstAmount" value={formData.sgstAmount} onChange={handleChange} className="w-full p-2 rounded-lg focus:outline-none focus:ring-2" style={{ border: '1px solid hsl(45, 100%, 85%)', focusRingColor: 'hsl(45, 43%, 58%)' }} />
+        </div>
+        <div>
+          <label className="block font-semibold mb-2" style={{ color: 'hsl(45, 100%, 20%)' }}>CGST Rate</label>
+          <input type="number" name="cgstRate" value={formData.cgstRate} onChange={handleChange} step="0.001" min="0" max="1" className="w-full p-2 rounded-lg focus:outline-none focus:ring-2" style={{ border: '1px solid hsl(45, 100%, 85%)', focusRingColor: 'hsl(45, 43%, 58%)' }} />
+        </div>
+        <div>
+          <label className="block font-semibold mb-2" style={{ color: 'hsl(45, 100%, 20%)' }}>SGST Rate</label>
+          <input type="number" name="sgstRate" value={formData.sgstRate} onChange={handleChange} step="0.001" min="0" max="1" className="w-full p-2 rounded-lg focus:outline-none focus:ring-2" style={{ border: '1px solid hsl(45, 100%, 85%)', focusRingColor: 'hsl(45, 43%, 58%)' }} />
+        </div>
+        <div className="flex items-center gap-2">
+          <input type="checkbox" name="taxIncluded" checked={formData.taxIncluded} onChange={handleChange} className="h-5 w-5 rounded" style={{ accentColor: 'hsl(45, 43%, 58%)' }} />
+          <label className="font-semibold" style={{ color: 'hsl(45, 100%, 20%)' }}>Tax Included</label>
+        </div>
+        <div className="flex items-center gap-2">
+          <input type="checkbox" name="serviceCharge" checked={formData.serviceCharge} onChange={handleChange} className="h-5 w-5 rounded" style={{ accentColor: 'hsl(45, 43%, 58%)' }} />
+          <label className="font-semibold" style={{ color: 'hsl(45, 100%, 20%)' }}>Service Charge</label>
         </div>
         <div>
           <label className="block font-semibold mb-2" style={{ color: 'hsl(45, 100%, 20%)' }}>Payment Mode</label>

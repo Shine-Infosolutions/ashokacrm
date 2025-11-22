@@ -112,7 +112,7 @@ const Input = ({
     placeholder={placeholder}
     value={value || ""}
     onChange={onChange}
-    className={`flex h-9 w-full rounded-md border border-gray-300 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:cursor-not-allowed disabled:opacity-50 min-w-0 ${className}`}
+    className={`flex h-9 w-full rounded-md border border-gray-300 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus:ring-2 focus:ring-[hsl(45,70%,50%)] focus:border-[hsl(45,70%,50%)] disabled:cursor-not-allowed disabled:opacity-50 min-w-0 ${className}`}
     {...props}
   />
 );
@@ -138,7 +138,7 @@ const Select = ({
     value={value}
     onChange={onChange}
     name={name}
-    className={`flex h-9 w-full items-center justify-between rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:cursor-not-allowed disabled:opacity-50 truncate ${className}`}
+    className={`flex h-9 w-full items-center justify-between rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm shadow-sm focus:ring-2 focus:ring-[hsl(45,70%,50%)] focus:border-[hsl(45,70%,50%)] disabled:cursor-not-allowed disabled:opacity-50 truncate ${className}`}
     {...props}
   >
     {children}
@@ -151,7 +151,7 @@ const Checkbox = ({ id, checked, onChange, className = "" }) => (
     id={id}
     checked={checked}
     onChange={onChange}
-    className={`h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 ${className}`}
+    className={`h-4 w-4 rounded border-gray-300 text-[hsl(45,70%,50%)] focus:ring-[hsl(45,70%,50%)] ${className}`}
   />
 );
 
@@ -301,6 +301,11 @@ export const AppProvider = ({ children }) => {
     rate: 0,
     taxIncluded: false,
     serviceCharge: false,
+    taxableAmount: 0,
+    cgstAmount: 0,
+    sgstAmount: 0,
+    cgstRate: 0.025,
+    sgstRate: 0.025,
     arrivedFrom: '',
     destination: '',
     remark: '',
@@ -418,7 +423,8 @@ export const AppProvider = ({ children }) => {
       phoneNo: '', birthDate: '', anniversary: '', companyName: '', companyGSTIN: '',
       idProofType: '', idProofNumber: '', idProofImageUrl: '', idProofImageUrl2: '',
       photoUrl: '', roomNumber: '', planPackage: '', noOfAdults: 1, noOfChildren: 0,
-      rate: 0, taxIncluded: false, serviceCharge: false, arrivedFrom: '',
+      rate: 0, taxIncluded: false, serviceCharge: false, taxableAmount: 0,
+      cgstAmount: 0, sgstAmount: 0, cgstRate: 0.025, sgstRate: 0.025, arrivedFrom: '',
       destination: '', remark: '', businessSource: '', marketSegment: '',
       purposeOfVisit: '', discountPercent: 0, discountRoomSource: 0, paymentMode: '',
       paymentStatus: 'Pending', bookingRefNo: '', mgmtBlock: 'No', billingInstruction: '',
@@ -1009,6 +1015,11 @@ const App = () => {
     delete cleanFormData.__v;
     delete cleanFormData.createdAt;
     delete cleanFormData.updatedAt;
+    
+    // Remove empty planPackage to avoid validation error
+    if (!cleanFormData.planPackage || cleanFormData.planPackage.trim() === '') {
+      delete cleanFormData.planPackage;
+    }
     
     // Ensure numeric fields are properly formatted
     cleanFormData.age = cleanFormData.age ? Number(cleanFormData.age) : 0;
@@ -1782,12 +1793,18 @@ const App = () => {
             </div>
             <div className="space-y-2">
               <Label htmlFor="planPackage">Package Plan</Label>
-              <Input
+              <Select
                 id="planPackage"
                 name="planPackage"
                 value={formData.planPackage}
                 onChange={handleChange}
-              />
+              >
+                <option value="">Select Package Plan</option>
+                <option value="EP">EP (European Plan)</option>
+                <option value="CP">CP (Continental Plan)</option>
+                <option value="MAP">MAP (Modified American Plan)</option>
+                <option value="AP">AP (American Plan)</option>
+              </Select>
             </div>
             <div className="space-y-2">
               <Label htmlFor="timeIn">Check-in Time</Label>
@@ -1890,6 +1907,81 @@ const App = () => {
                 value={formData.discountPercent}
                 onChange={handleChange}
               />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="taxableAmount">Taxable Amount</Label>
+              <Input
+                id="taxableAmount"
+                name="taxableAmount"
+                type="number"
+                min="0"
+                value={formData.taxableAmount}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="cgstAmount">CGST Amount</Label>
+              <Input
+                id="cgstAmount"
+                name="cgstAmount"
+                type="number"
+                min="0"
+                value={formData.cgstAmount}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="sgstAmount">SGST Amount</Label>
+              <Input
+                id="sgstAmount"
+                name="sgstAmount"
+                type="number"
+                min="0"
+                value={formData.sgstAmount}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="cgstRate">CGST Rate</Label>
+              <Input
+                id="cgstRate"
+                name="cgstRate"
+                type="number"
+                min="0"
+                max="1"
+                step="0.001"
+                value={formData.cgstRate}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="sgstRate">SGST Rate</Label>
+              <Input
+                id="sgstRate"
+                name="sgstRate"
+                type="number"
+                min="0"
+                max="1"
+                step="0.001"
+                value={formData.sgstRate}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="space-y-2 flex items-center gap-2">
+              <Checkbox
+                id="taxIncluded"
+                checked={formData.taxIncluded}
+                onChange={(e) => setFormData(prev => ({ ...prev, taxIncluded: e.target.checked }))}
+              />
+              <Label htmlFor="taxIncluded">Tax Included</Label>
+            </div>
+            <div className="space-y-2 flex items-center gap-2">
+              <Checkbox
+                id="serviceCharge"
+                checked={formData.serviceCharge}
+                onChange={(e) => setFormData(prev => ({ ...prev, serviceCharge: e.target.checked }))}
+              />
+              <Label htmlFor="serviceCharge">Service Charge</Label>
             </div>
             <div className="space-y-2">
               <Label htmlFor="paymentStatus">Payment Status</Label>
