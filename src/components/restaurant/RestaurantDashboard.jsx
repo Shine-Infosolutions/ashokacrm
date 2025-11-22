@@ -541,10 +541,14 @@ const DashboardContent = () => {
                 const orderDate = new Date(order.createdAt || order.date);
                 return orderDate.toDateString() === today;
             });
+            const todaysRevenue = todayOrders.reduce((sum, order) => sum + (order.totalAmount || order.amount || order.total || 0), 0);
             const pendingOrders = ordersData.filter(order => 
                 order.status === 'pending' || order.status === 'preparing' || order.status === 'in-progress' ||
                 order.status === 'new' || order.status === 'received' || order.status === 'confirmed'
             );
+            
+            // Update pending orders count using the status endpoint
+            const pendingOrdersCount = pendingOrders.length;
             
 
             const totalRevenue = todayOrders.reduce((sum, order) => sum + (order.totalAmount || order.amount || order.total || 0), 0);
@@ -570,10 +574,10 @@ const DashboardContent = () => {
                 dashboardStats.todayOrders = todayOrders.length;
             }
             if (dashboardStats.totalRevenue === 0) {
-                dashboardStats.totalRevenue = totalRevenue;
+                dashboardStats.totalRevenue = todaysRevenue;
             }
             if (dashboardStats.pendingOrders === 0) {
-                dashboardStats.pendingOrders = pendingOrders.length;
+                dashboardStats.pendingOrders = pendingOrdersCount;
             }
             if (dashboardStats.availableTables === 0) {
                 dashboardStats.availableTables = availableTables;
@@ -658,11 +662,7 @@ const DashboardContent = () => {
                                 {item.description}
                             </p>
 
-                            {/* Keyboard Shortcut */}
-                            <span className="absolute top-2 right-2 text-xs text-gray-400 opacity-0
-                                group-hover:opacity-100 transition-opacity bg-gray-50 px-1.5 py-0.5 rounded">
-                                {item.shortcut}
-                            </span>
+
 
                             {/* Hover Indicator */}
                             <div 
@@ -716,22 +716,24 @@ const DashboardContent = () => {
                     ) : (
                         <>
                             <StatCard 
-                                title="Today's Revenue" 
-                                value={`₹${stats.totalRevenue.toLocaleString()}`} 
+                                title="Total Revenue" 
+                                value={`₹${orders.reduce((sum, order) => sum + (order.totalAmount || order.amount || order.total || 0), 0).toLocaleString()}`} 
                                 change={stats.revenueChange || 0} 
                                 icon={DollarSign} 
                                 color="#22c55e"  // Success green
                             />
                             <StatCard 
-                                title="Today's Orders" 
-                                value={stats.todayOrders} 
+                                title="All Orders" 
+                                value={orders.length} 
                                 change={stats.ordersChange || 0} 
                                 icon={ShoppingCart} 
                                 color="#3b82f6"  // Information blue
                             />
                             <StatCard 
                                 title="Pending Orders" 
-                                value={stats.pendingOrders} 
+                                value={orders.filter(order => 
+                                    ['pending', 'preparing', 'in-progress', 'new', 'received', 'confirmed'].includes(order.status)
+                                ).length} 
                                 change={stats.pendingChange || 0} 
                                 icon={ListChecks} 
                                 color="#f59e0b"  // Warning yellow
