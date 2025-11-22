@@ -303,7 +303,7 @@ const PantryDashboard = () => {
                   <div>
                     <h3 className="font-medium text-gray-900">{item.name}</h3>
                     <p className="text-sm text-gray-600">Category: {typeof item.category === 'object' ? item.category?.name || 'N/A' : item.category || 'N/A'}</p>
-                    <p className="text-sm text-gray-600">Unit: {item.unit}</p>
+                    <p className="text-sm text-gray-600">Unit: {typeof item.unit === 'object' ? item.unit?.name || 'N/A' : item.unit || 'N/A'}</p>
                   </div>
                   <div className="text-right">
                     <p className="text-lg font-bold text-red-600">{item.stockQuantity || 0}</p>
