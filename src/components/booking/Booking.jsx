@@ -1,240 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Edit, XCircle, CheckCircle, Search, X, FileText, Trash2 } from "lucide-react";
+import { Edit, XCircle, CheckCircle, Search, X, FileText, Trash2, Calendar } from "lucide-react";
 import { useAppContext } from "../../context/AppContext";
 import Pagination from "../common/Pagination";
 import DashboardLoader from '../DashboardLoader';
 
-const BookingEdit = ({ booking, onSave, onCancel }) => {
-  const [formData, setFormData] = useState({
-    grcNo: booking?.grcNo || "",
-    name: booking?.name || "",
-    mobileNo: booking?.mobileNo || "",
-    email: booking?.email || "",
-    address: booking?.address || "",
-    city: booking?.city || "",
-    nationality: booking?.nationality || "",
-    checkInDate: booking?.checkInDate
-      ? new Date(booking.checkInDate).toISOString().split("T")[0]
-      : "",
-    checkOutDate: booking?.checkOutDate
-      ? new Date(booking.checkOutDate).toISOString().split("T")[0]
-      : "",
-    roomNumber: booking?.roomNumber || "",
-    noOfAdults: booking?.noOfAdults || 1,
-    noOfChildren: booking?.noOfChildren || 0,
-    rate: booking?.rate || 0,
-    taxableAmount: booking?.taxableAmount || 0,
-    cgstAmount: booking?.cgstAmount || 0,
-    sgstAmount: booking?.sgstAmount || 0,
-    cgstRate: booking?.cgstRate || 0.025,
-    sgstRate: booking?.sgstRate || 0.025,
-    taxIncluded: booking?.taxIncluded || false,
-    serviceCharge: booking?.serviceCharge || false,
-    paymentMode: booking?.paymentMode || "",
-    paymentStatus: booking?.paymentStatus || "Pending",
-    vip: booking?.vip || false,
-    status: booking?.status || "Booked",
-    remark: booking?.remark || "",
-    idProofType: booking?.idProofType || "",
-    idProofNumber: booking?.idProofNumber || "",
-    age: booking?.age || "",
-    gender: booking?.gender || "",
-  });
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === "checkbox" ? checked : value,
-    });
-  };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSave(formData);
-  };
-
-  return (
-    <div className="p-6 rounded-lg shadow-xl w-full max-w-4xl bg-white">
-      <h3 className="text-2xl font-bold mb-4 text-center" style={{ color: 'hsl(45, 100%, 20%)' }}>
-        Edit Booking: {booking?.name}
-      </h3>
-      <form
-        onSubmit={handleSubmit}
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[70vh] overflow-y-auto"
-      >
-        <div>
-          <label className="block font-semibold mb-2" style={{ color: 'hsl(45, 100%, 20%)' }}>GRC No</label>
-          <input type="text" name="grcNo" value={formData.grcNo} onChange={handleChange} className="w-full p-2 rounded-lg focus:outline-none focus:ring-2" style={{ border: '1px solid hsl(45, 100%, 85%)', focusRingColor: 'hsl(45, 43%, 58%)' }} />
-        </div>
-        <div>
-          <label className="block font-semibold mb-2" style={{ color: 'hsl(45, 100%, 20%)' }}>Guest Name</label>
-          <input type="text" name="name" value={formData.name} onChange={handleChange} className="w-full p-2 rounded-lg focus:outline-none focus:ring-2" style={{ border: '1px solid hsl(45, 100%, 85%)', focusRingColor: 'hsl(45, 43%, 58%)' }} />
-        </div>
-        <div>
-          <label className="block font-semibold mb-2" style={{ color: 'hsl(45, 100%, 20%)' }}>Mobile Number</label>
-          <input type="text" name="mobileNo" value={formData.mobileNo} onChange={handleChange} className="w-full p-2 rounded-lg focus:outline-none focus:ring-2" style={{ border: '1px solid hsl(45, 100%, 85%)', focusRingColor: 'hsl(45, 43%, 58%)' }} />
-        </div>
-        <div>
-          <label className="block font-semibold mb-2" style={{ color: 'hsl(45, 100%, 20%)' }}>Email</label>
-          <input type="email" name="email" value={formData.email} onChange={handleChange} className="w-full p-2 rounded-lg focus:outline-none focus:ring-2" style={{ border: '1px solid hsl(45, 100%, 85%)', focusRingColor: 'hsl(45, 43%, 58%)' }} />
-        </div>
-        <div>
-          <label className="block font-semibold mb-2" style={{ color: 'hsl(45, 100%, 20%)' }}>Age</label>
-          <input type="number" name="age" value={formData.age} onChange={handleChange} className="w-full p-2 rounded-lg focus:outline-none focus:ring-2" style={{ border: '1px solid hsl(45, 100%, 85%)', focusRingColor: 'hsl(45, 43%, 58%)' }} />
-        </div>
-        <div>
-          <label className="block font-semibold mb-2" style={{ color: 'hsl(45, 100%, 20%)' }}>Gender</label>
-          <select name="gender" value={formData.gender} onChange={handleChange} className="w-full p-2 rounded-lg focus:outline-none focus:ring-2" style={{ border: '1px solid hsl(45, 100%, 85%)', focusRingColor: 'hsl(45, 43%, 58%)' }}>
-            <option value="">Select Gender</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-            <option value="Other">Other</option>
-          </select>
-        </div>
-        <div>
-          <label className="block font-semibold mb-2" style={{ color: 'hsl(45, 100%, 20%)' }}>Address</label>
-          <input type="text" name="address" value={formData.address} onChange={handleChange} className="w-full p-2 rounded-lg focus:outline-none focus:ring-2" style={{ border: '1px solid hsl(45, 100%, 85%)', focusRingColor: 'hsl(45, 43%, 58%)' }} />
-        </div>
-        <div>
-          <label className="block font-semibold mb-2" style={{ color: 'hsl(45, 100%, 20%)' }}>City</label>
-          <input type="text" name="city" value={formData.city} onChange={handleChange} className="w-full p-2 rounded-lg focus:outline-none focus:ring-2" style={{ border: '1px solid hsl(45, 100%, 85%)', focusRingColor: 'hsl(45, 43%, 58%)' }} />
-        </div>
-        <div>
-          <label className="block font-semibold mb-2" style={{ color: 'hsl(45, 100%, 20%)' }}>Nationality</label>
-          <input type="text" name="nationality" value={formData.nationality} onChange={handleChange} className="w-full p-2 rounded-lg focus:outline-none focus:ring-2" style={{ border: '1px solid hsl(45, 100%, 85%)', focusRingColor: 'hsl(45, 43%, 58%)' }} />
-        </div>
-        <div>
-          <label className="block font-semibold mb-2" style={{ color: 'hsl(45, 100%, 20%)' }}>Check-in Date</label>
-          <input type="date" name="checkInDate" value={formData.checkInDate} onChange={handleChange} className="w-full p-2 rounded-lg focus:outline-none focus:ring-2" style={{ border: '1px solid hsl(45, 100%, 85%)', focusRingColor: 'hsl(45, 43%, 58%)' }} />
-        </div>
-        <div>
-          <label className="block font-semibold mb-2" style={{ color: 'hsl(45, 100%, 20%)' }}>Check-out Date</label>
-          <input type="date" name="checkOutDate" value={formData.checkOutDate} onChange={handleChange} className="w-full p-2 rounded-lg focus:outline-none focus:ring-2" style={{ border: '1px solid hsl(45, 100%, 85%)', focusRingColor: 'hsl(45, 43%, 58%)' }} />
-        </div>
-        <div>
-          <label className="block font-semibold mb-2" style={{ color: 'hsl(45, 100%, 20%)' }}>Room Number</label>
-          <input type="text" name="roomNumber" value={formData.roomNumber} onChange={handleChange} className="w-full p-2 rounded-lg focus:outline-none focus:ring-2" style={{ border: '1px solid hsl(45, 100%, 85%)', focusRingColor: 'hsl(45, 43%, 58%)' }} />
-        </div>
-        <div>
-          <label className="block font-semibold mb-2" style={{ color: 'hsl(45, 100%, 20%)' }}>Adults</label>
-          <input type="number" name="noOfAdults" value={formData.noOfAdults} onChange={handleChange} min="1" className="w-full p-2 rounded-lg focus:outline-none focus:ring-2" style={{ border: '1px solid hsl(45, 100%, 85%)', focusRingColor: 'hsl(45, 43%, 58%)' }} />
-        </div>
-        <div>
-          <label className="block font-semibold mb-2" style={{ color: 'hsl(45, 100%, 20%)' }}>Children</label>
-          <input type="number" name="noOfChildren" value={formData.noOfChildren} onChange={handleChange} min="0" className="w-full p-2 rounded-lg focus:outline-none focus:ring-2" style={{ border: '1px solid hsl(45, 100%, 85%)', focusRingColor: 'hsl(45, 43%, 58%)' }} />
-        </div>
-        <div>
-          <label className="block font-semibold mb-2" style={{ color: 'hsl(45, 100%, 20%)' }}>Rate</label>
-          <input type="number" name="rate" value={formData.rate} onChange={handleChange} className="w-full p-2 rounded-lg focus:outline-none focus:ring-2" style={{ border: '1px solid hsl(45, 100%, 85%)', focusRingColor: 'hsl(45, 43%, 58%)' }} />
-        </div>
-        <div>
-          <label className="block font-semibold mb-2" style={{ color: 'hsl(45, 100%, 20%)' }}>Taxable Amount</label>
-          <input type="number" name="taxableAmount" value={formData.taxableAmount} onChange={handleChange} className="w-full p-2 rounded-lg focus:outline-none focus:ring-2" style={{ border: '1px solid hsl(45, 100%, 85%)', focusRingColor: 'hsl(45, 43%, 58%)' }} />
-        </div>
-        <div>
-          <label className="block font-semibold mb-2" style={{ color: 'hsl(45, 100%, 20%)' }}>CGST Amount</label>
-          <input type="number" name="cgstAmount" value={formData.cgstAmount} onChange={handleChange} className="w-full p-2 rounded-lg focus:outline-none focus:ring-2" style={{ border: '1px solid hsl(45, 100%, 85%)', focusRingColor: 'hsl(45, 43%, 58%)' }} />
-        </div>
-        <div>
-          <label className="block font-semibold mb-2" style={{ color: 'hsl(45, 100%, 20%)' }}>SGST Amount</label>
-          <input type="number" name="sgstAmount" value={formData.sgstAmount} onChange={handleChange} className="w-full p-2 rounded-lg focus:outline-none focus:ring-2" style={{ border: '1px solid hsl(45, 100%, 85%)', focusRingColor: 'hsl(45, 43%, 58%)' }} />
-        </div>
-        <div>
-          <label className="block font-semibold mb-2" style={{ color: 'hsl(45, 100%, 20%)' }}>CGST Rate</label>
-          <input type="number" name="cgstRate" value={formData.cgstRate} onChange={handleChange} step="0.001" min="0" max="1" className="w-full p-2 rounded-lg focus:outline-none focus:ring-2" style={{ border: '1px solid hsl(45, 100%, 85%)', focusRingColor: 'hsl(45, 43%, 58%)' }} />
-        </div>
-        <div>
-          <label className="block font-semibold mb-2" style={{ color: 'hsl(45, 100%, 20%)' }}>SGST Rate</label>
-          <input type="number" name="sgstRate" value={formData.sgstRate} onChange={handleChange} step="0.001" min="0" max="1" className="w-full p-2 rounded-lg focus:outline-none focus:ring-2" style={{ border: '1px solid hsl(45, 100%, 85%)', focusRingColor: 'hsl(45, 43%, 58%)' }} />
-        </div>
-        <div className="flex items-center gap-2">
-          <input type="checkbox" name="taxIncluded" checked={formData.taxIncluded} onChange={handleChange} className="h-5 w-5 rounded" style={{ accentColor: 'hsl(45, 43%, 58%)' }} />
-          <label className="font-semibold" style={{ color: 'hsl(45, 100%, 20%)' }}>Tax Included</label>
-        </div>
-        <div className="flex items-center gap-2">
-          <input type="checkbox" name="serviceCharge" checked={formData.serviceCharge} onChange={handleChange} className="h-5 w-5 rounded" style={{ accentColor: 'hsl(45, 43%, 58%)' }} />
-          <label className="font-semibold" style={{ color: 'hsl(45, 100%, 20%)' }}>Service Charge</label>
-        </div>
-        <div>
-          <label className="block font-semibold mb-2" style={{ color: 'hsl(45, 100%, 20%)' }}>Payment Mode</label>
-          <select name="paymentMode" value={formData.paymentMode} onChange={handleChange} className="w-full p-2 rounded-lg focus:outline-none focus:ring-2" style={{ border: '1px solid hsl(45, 100%, 85%)', focusRingColor: 'hsl(45, 43%, 58%)' }}>
-            <option value="">Select Payment Mode</option>
-            <option value="Cash">Cash</option>
-            <option value="Card">Card</option>
-            <option value="UPI">UPI</option>
-            <option value="Bank Transfer">Bank Transfer</option>
-          </select>
-        </div>
-        <div>
-          <label className="block font-semibold mb-2" style={{ color: 'hsl(45, 100%, 20%)' }}>Payment Status</label>
-          <select name="paymentStatus" value={formData.paymentStatus} onChange={handleChange} className="w-full p-2 rounded-lg focus:outline-none focus:ring-2" style={{ border: '1px solid hsl(45, 100%, 85%)', focusRingColor: 'hsl(45, 43%, 58%)' }}>
-            <option value="Pending">Pending</option>
-            <option value="Paid">Paid</option>
-            <option value="Failed">Failed</option>
-            <option value="Partial">Partial</option>
-          </select>
-        </div>
-        <div>
-          <label className="block font-semibold mb-2" style={{ color: 'hsl(45, 100%, 20%)' }}>Status</label>
-          <select name="status" value={formData.status} onChange={handleChange} className="w-full p-2 rounded-lg focus:outline-none focus:ring-2" style={{ border: '1px solid hsl(45, 100%, 85%)', focusRingColor: 'hsl(45, 43%, 58%)' }}>
-            <option value="Booked">Booked</option>
-            <option value="Checked In">Checked In</option>
-            <option value="Checked Out">Checked Out</option>
-            <option value="Cancelled">Cancelled</option>
-          </select>
-        </div>
-        <div>
-          <label className="block font-semibold mb-2" style={{ color: 'hsl(45, 100%, 20%)' }}>ID Proof Type</label>
-          <select name="idProofType" value={formData.idProofType} onChange={handleChange} className="w-full p-2 rounded-lg focus:outline-none focus:ring-2" style={{ border: '1px solid hsl(45, 100%, 85%)', focusRingColor: 'hsl(45, 43%, 58%)' }}>
-            <option value="">Select ID Proof Type</option>
-            <option value="Aadhaar">Aadhaar</option>
-            <option value="PAN">PAN</option>
-            <option value="Voter ID">Voter ID</option>
-            <option value="Passport">Passport</option>
-            <option value="Driving License">Driving License</option>
-          </select>
-        </div>
-        <div>
-          <label className="block font-semibold mb-2" style={{ color: 'hsl(45, 100%, 20%)' }}>ID Proof Number</label>
-          <input type="text" name="idProofNumber" value={formData.idProofNumber} onChange={handleChange} className="w-full p-2 rounded-lg focus:outline-none focus:ring-2" style={{ border: '1px solid hsl(45, 100%, 85%)', focusRingColor: 'hsl(45, 43%, 58%)' }} />
-        </div>
-        <div className="flex items-center gap-2">
-          <input type="checkbox" name="vip" checked={formData.vip} onChange={handleChange} className="h-5 w-5 rounded" style={{ accentColor: 'hsl(45, 43%, 58%)' }} />
-          <label className="font-semibold" style={{ color: 'hsl(45, 100%, 20%)' }}>VIP</label>
-        </div>
-        <div className="lg:col-span-3">
-          <label className="block font-semibold mb-2" style={{ color: 'hsl(45, 100%, 20%)' }}>Remarks</label>
-          <textarea name="remark" value={formData.remark} onChange={handleChange} rows="3" className="w-full p-2 rounded-lg focus:outline-none focus:ring-2" style={{ border: '1px solid hsl(45, 100%, 85%)', focusRingColor: 'hsl(45, 43%, 58%)' }} />
-        </div>
-        <div className="lg:col-span-3 flex justify-end gap-4 mt-4">
-          <button
-            type="button"
-            onClick={onCancel}
-            className="font-bold py-3 px-6 rounded-lg transition duration-300"
-            style={{ 
-              backgroundColor: 'hsl(45, 100%, 85%)', 
-              color: 'hsl(45, 100%, 20%)' 
-            }}
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            className="font-bold py-3 px-6 rounded-lg shadow-md transition duration-300"
-            style={{ 
-              backgroundColor: 'hsl(45, 43%, 58%)', 
-              color: 'white' 
-            }}
-          >
-            Save Changes
-          </button>
-        </div>
-      </form>
-    </div>
-  );
-};
 
 const BookingPage = () => {
   const navigate = useNavigate();
@@ -245,9 +17,15 @@ const BookingPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
-  const [editId, setEditId] = useState(null);
+
   const [showInvoice, setShowInvoice] = useState(false);
   const [currentInvoice, setCurrentInvoice] = useState(null);
+  const [showAmendModal, setShowAmendModal] = useState(false);
+  const [amendBookingId, setAmendBookingId] = useState(null);
+  const [amendmentData, setAmendmentData] = useState({
+    newCheckOut: '',
+    reason: ''
+  });
   const [grcSearchResult, setGrcSearchResult] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
@@ -479,6 +257,53 @@ const BookingPage = () => {
     } catch (err) {
       console.error("Error deleting booking:", err);
       showToast.error(err.response?.data?.message || err.message || "Failed to delete booking");
+    }
+  };
+
+  const handleAmendBooking = (bookingId) => {
+    setAmendBookingId(bookingId);
+    setShowAmendModal(true);
+    setAmendmentData({ newCheckOut: '', reason: '' });
+  };
+
+  const submitAmendment = async () => {
+    if (!amendmentData.newCheckOut || !amendmentData.reason) {
+      setError('Please fill in all required fields');
+      return;
+    }
+
+    try {
+      const token = getAuthToken();
+      const booking = bookings.find(b => b.id === amendBookingId);
+      if (!booking) {
+        setError('Booking not found');
+        return;
+      }
+
+      // Update booking with new checkout date
+      const response = await axios.put(`/api/bookings/update/${amendBookingId}`, {
+        checkOutDate: amendmentData.newCheckOut,
+        remark: `${booking._raw.remark || ''} [Amendment: ${amendmentData.reason}]`.trim()
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      // Update the booking in the list
+      setBookings(prev => prev.map(b => 
+        b.id === amendBookingId 
+          ? { ...b, checkOut: new Date(amendmentData.newCheckOut).toLocaleDateString() }
+          : b
+      ));
+      
+      setShowAmendModal(false);
+      setAmendBookingId(null);
+      setAmendmentData({ newCheckOut: '', reason: '' });
+      setError(null);
+      
+      alert('Booking stay amended successfully!');
+    } catch (err) {
+      console.error('Error amending booking:', err);
+      setError(err.response?.data?.message || err.message || 'Failed to amend booking');
     }
   };
 
@@ -734,11 +559,19 @@ const BookingPage = () => {
                     <td className="px-4 py-3 whitespace-nowrap text-center">
                       <div className="flex space-x-1 justify-center items-center">
                         <button
-                          onClick={() => setEditId(booking.id)}
+                          onClick={() => navigate('/edit-booking', { state: { editBooking: booking._raw } })}
                           title="Edit Booking"
                           className="p-1.5 rounded-full text-blue-600 transition duration-300"
                         >
                           <Edit size={16} />
+                        </button>
+
+                        <button
+                          onClick={() => handleAmendBooking(booking.id)}
+                          title="Amend Booking Stay"
+                          className="p-1.5 rounded-full text-orange-600 transition duration-300"
+                        >
+                          <Calendar size={16} />
                         </button>
 
                         {booking.status === "Checked Out" && (
@@ -834,12 +667,21 @@ const BookingPage = () => {
               
               <div className="flex flex-col sm:flex-row justify-end gap-2 pt-3 border-t" style={{ borderColor: 'hsl(45, 100%, 90%)' }}>
                 <button
-                  onClick={() => setEditId(booking.id)}
+                  onClick={() => navigate('/edit-booking', { state: { editBooking: booking._raw } })}
                   className="p-2 rounded-full transition duration-300"
                   style={{ color: 'hsl(45, 43%, 58%)' }}
                   title="Edit"
                 >
                   <Edit size={18} />
+                </button>
+
+                <button
+                  onClick={() => handleAmendBooking(booking.id)}
+                  className="p-2 rounded-full transition duration-300"
+                  style={{ color: 'hsl(25, 95%, 53%)' }}
+                  title="Amend Stay"
+                >
+                  <Calendar size={18} />
                 </button>
 
                 {booking.status === "Checked Out" && (
@@ -881,17 +723,7 @@ const BookingPage = () => {
         </>
       )}
 
-      {editId && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex justify-center items-center p-4">
-          <BookingEdit
-            booking={bookings.find((b) => b.id === editId)?._raw}
-            onSave={async (updated) => {
-              await updateBooking(editId, updated);
-            }}
-            onCancel={() => setEditId(null)}
-          />
-        </div>
-      )}
+
 
       {showInvoice && currentInvoice && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex justify-center items-center p-4">
@@ -960,6 +792,83 @@ const BookingPage = () => {
                 style={{ backgroundColor: 'hsl(45, 100%, 85%)', color: 'hsl(45, 100%, 20%)' }}
               >
                 Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Amendment Modal */}
+      {showAmendModal && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex justify-center items-center p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Amend Booking Stay</h3>
+              <button
+                onClick={() => setShowAmendModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="bg-blue-50 p-3 rounded-lg">
+                <p className="text-sm text-blue-800">
+                  <strong>Current Booking:</strong><br />
+                  {(() => {
+                    const booking = bookings.find(b => b.id === amendBookingId);
+                    return booking ? (
+                      <>
+                        Guest: {booking.name}<br />
+                        Room: {booking.roomNumber}<br />
+                        Check-out: {booking.checkOut}
+                      </>
+                    ) : 'Booking not found';
+                  })()}
+                </p>
+              </div>
+              
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  New Check-out Date <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="date"
+                  value={amendmentData.newCheckOut}
+                  onChange={(e) => setAmendmentData(prev => ({ ...prev, newCheckOut: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Reason for Amendment <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  value={amendmentData.reason}
+                  onChange={(e) => setAmendmentData(prev => ({ ...prev, reason: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  rows="3"
+                  placeholder="Enter reason for date change..."
+                  required
+                />
+              </div>
+            </div>
+            
+            <div className="flex justify-end gap-3 mt-6">
+              <button
+                onClick={() => setShowAmendModal(false)}
+                className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={submitAmendment}
+                className="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 transition-colors"
+              >
+                Amend Stay
               </button>
             </div>
           </div>

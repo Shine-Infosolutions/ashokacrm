@@ -11,6 +11,7 @@ import LoginPage from "./components/login/LoginPage";
 import StaffList from "./components/staff/StaffList";
 import BookingForm from "./components/booking/BookingForm";
 import Booking from "./components/booking/Booking";
+import EditBookingForm from "./components/booking/EditBookingForm";
 import CheckoutPage from "./components/booking/CheckoutPage";
 import RoomInspection from "./components/RoomInspection";
 import Reservation from "./components/reservation/Reservation";
@@ -167,6 +168,7 @@ const App = () => {
                         element={<BookingFormPage />}
                       />
                       <Route path="/booking" element={<Booking />} />
+                      <Route path="/edit-booking" element={<EditBookingForm />} />
                       <Route
                         path="/room-inspection"
                         element={<RoomInspection />}
