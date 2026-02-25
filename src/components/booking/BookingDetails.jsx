@@ -101,6 +101,9 @@ const calculateBilling = (booking, serviceCharges, restaurantCharges, laundryCha
   
   // Calculate laundry charges
   const laundryTotal = laundryCharges.reduce((sum, order) => {
+    // Skip cancelled orders
+    if (order.laundryStatus === 'cancelled') return sum;
+    
     const chargeableAmount = order.items?.filter(item => !item.nonChargeable && item.status !== 'lost')
       .reduce((itemSum, item) => itemSum + (item.calculatedAmount || 0), 0) || 0;
     return sum + chargeableAmount;

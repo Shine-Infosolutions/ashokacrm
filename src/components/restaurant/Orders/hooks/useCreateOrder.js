@@ -4,7 +4,7 @@ import { useMergeTablesForOrder } from './useMergeTablesForOrder';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
-export const useCreateOrder = (onCreateOrder) => {
+export const useCreateOrder = (onCreateOrder, sgstRate = 2.5, cgstRate = 2.5) => {
   const [menuItems, setMenuItems] = useState([]);
   const [tables, setTables] = useState([]);
   const [orderItems, setOrderItems] = useState([]);
@@ -190,7 +190,9 @@ export const useCreateOrder = (onCreateOrder) => {
         customerName: customerName.trim(),
         customerPhone: customerPhone.trim() || undefined,
         guestCount: parseInt(guestCount),
-        subtotal: Number(subtotal) || 0
+        subtotal: Number(subtotal) || 0,
+        sgstRate: Number(sgstRate) || 2.5,
+        cgstRate: Number(cgstRate) || 2.5
       };
       
       if (tableId) {

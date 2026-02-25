@@ -8,6 +8,8 @@ const CreateOrder = ({ onCreateOrder, onCancel }) => {
   const [searchQuery, setSearchQuery] = React.useState('');
   const [customers, setCustomers] = React.useState([]);
   const [showCustomerDropdown, setShowCustomerDropdown] = React.useState(false);
+  const [sgstRate, setSgstRate] = React.useState(2.5);
+  const [cgstRate, setCgstRate] = React.useState(2.5);
   const {
     menuItems,
     tables,
@@ -43,7 +45,7 @@ const CreateOrder = ({ onCreateOrder, onCancel }) => {
     calculateTotal,
     handleSubmit,
     fetchMenuItems
-  } = useCreateOrder(onCreateOrder);
+  } = useCreateOrder(onCreateOrder, sgstRate, cgstRate);
 
   React.useEffect(() => {
     if (customerPhone.length >= 3) {
@@ -153,6 +155,36 @@ const CreateOrder = ({ onCreateOrder, onCancel }) => {
                 className="w-full bg-white border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-400"
                 min="1"
                 required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                SGST Rate (%)
+              </label>
+              <input
+                type="number"
+                value={sgstRate}
+                onChange={(e) => setSgstRate(parseFloat(e.target.value) || 0)}
+                className="w-full bg-white border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-400"
+                min="0"
+                max="50"
+                step="0.1"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                CGST Rate (%)
+              </label>
+              <input
+                type="number"
+                value={cgstRate}
+                onChange={(e) => setCgstRate(parseFloat(e.target.value) || 0)}
+                className="w-full bg-white border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-400"
+                min="0"
+                max="50"
+                step="0.1"
               />
             </div>
 

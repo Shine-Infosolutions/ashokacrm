@@ -184,6 +184,7 @@ const EditBookingForm = () => {
   const [editingOrder, setEditingOrder] = useState(null);
   const [editItems, setEditItems] = useState([]);
   const [formInitialized, setFormInitialized] = useState(false);
+  const [loadingOrders, setLoadingOrders] = useState(false);
 
 
   const [formData, setFormData] = useState({
@@ -540,6 +541,7 @@ const EditBookingForm = () => {
   const fetchRoomServiceOrders = async () => {
     if (!editBooking?._id) return;
     
+    setLoadingOrders(true);
     try {
       const token = localStorage.getItem('token');
       
@@ -587,15 +589,14 @@ const EditBookingForm = () => {
         }
       });
       
-      // Filter laundry orders by room number or GRC
+      // Filter laundry orders by room number or GRC (include all statuses for display)
       const allLaundryOrders = laundryResponse.data.orders || laundryResponse.data || [];
       const filteredLaundry = allLaundryOrders.filter(order => {
         const matchesRoom = roomNumbers.some(roomNum => order.roomNumber === roomNum);
         const matchesGRC = order.grcNo === editBooking.grcNo;
         const matchesBooking = order.bookingId === editBooking._id;
-        const isNotCancelled = order.laundryStatus !== 'cancelled' && order.laundryStatus !== 'canceled';
         
-        return (matchesRoom || matchesGRC || matchesBooking) && isNotCancelled;
+        return matchesRoom || matchesGRC || matchesBooking;
       });
       
       setRoomServiceOrders(filteredRoomService);
@@ -603,6 +604,8 @@ const EditBookingForm = () => {
       setLaundryOrders(filteredLaundry);
     } catch (error) {
       console.error('Error fetching orders:', error);
+    } finally {
+      setLoadingOrders(false);
     }
   };
 
@@ -1929,6 +1932,12 @@ const EditBookingForm = () => {
                   </h2>
                 </div>
                 
+                {loadingOrders ? (
+                  <div className="flex justify-center items-center py-12">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+                  </div>
+                ) : (
+                  <>
                 {/* Room Service Orders */}
                 <RoomServiceOrders
                   serviceCharges={roomServiceOrders}
@@ -2408,6 +2417,8 @@ const EditBookingForm = () => {
                     </div>
                   )}
                 </div>
+                </>
+                )}
                 
                 <div className="flex justify-center gap-4">
                   {formData.status !== 'Checked Out' && (
@@ -2568,12 +2579,18 @@ const EditBookingForm = () => {
                           const discountAmount = roomSubtotal * (Number(formData.discountPercent || 0) / 100);
                           const discountedRoomSubtotal = roomSubtotal - discountAmount;
                           
-                          // Calculate laundry charges (exclude cancelled orders)
+                          // Calculate laundry charges (exclude cancelled orders and cancelled items)
                           const activeLaundryOrders = laundryOrders.filter(order => 
                             order.laundryStatus !== 'cancelled' && order.laundryStatus !== 'canceled'
                           );
                           const laundryTotal = activeLaundryOrders.reduce((sum, order) => {
-                            return sum + (order.items?.filter(item => !item.nonChargeable && item.status !== 'lost').reduce((itemSum, item) => itemSum + (item.calculatedAmount || 0), 0) || 0);
+                            return sum + (order.items?.filter(item => 
+                              !item.nonChargeable && 
+                              item.status !== 'lost' && 
+                              item.status !== 'cancelled' && 
+                              item.status !== 'canceled' &&
+                              item.status?.toLowerCase() !== 'cancelled'
+                            ).reduce((itemSum, item) => itemSum + (item.calculatedAmount || 0), 0) || 0);
                           }, 0);
                           
                           const subtotal = discountedRoomSubtotal + roomServiceTotal + restaurantTotal + laundryTotal;
@@ -2984,7 +3001,21 @@ const EditBookingForm = () => {
                               const roomSubtotal = roomRate + extraBedTotal;
                               const discountAmount = roomSubtotal * (Number(formData.discountPercent || 0) / 100);
                               const discountedRoomSubtotal = roomSubtotal - discountAmount;
-                              const subtotal = discountedRoomSubtotal + roomServiceTotal + restaurantTotal;
+                              
+                              // Calculate laundry charges (exclude cancelled orders and cancelled items)
+                              const activeLaundryOrders = laundryOrders.filter(order => 
+                                order.laundryStatus !== 'cancelled' && order.laundryStatus !== 'canceled'
+                              );
+                              const laundryTotal = activeLaundryOrders.reduce((sum, order) => {
+                                return sum + (order.items?.filter(item => 
+                                  !item.nonChargeable && 
+                                  item.status !== 'lost' && 
+                                  item.status !== 'cancelled' && 
+                                  item.status !== 'canceled'
+                                ).reduce((itemSum, item) => itemSum + (item.calculatedAmount || 0), 0) || 0);
+                              }, 0);
+                              
+                              const subtotal = discountedRoomSubtotal + roomServiceTotal + restaurantTotal + laundryTotal;
                               
                               const cgstAmount = subtotal * (Number(formData.cgstRate || 0) / 100);
                               const sgstAmount = subtotal * (Number(formData.sgstRate || 0) / 100);
