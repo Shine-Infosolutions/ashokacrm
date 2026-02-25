@@ -168,6 +168,7 @@ const Order = () => {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         });
         showToast.success('Order updated successfully');
+        await fetchOrders(); // Refresh orders list
       } else {
         const response = await axios.post('/api/pantry/orders', orderData, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
@@ -441,18 +442,31 @@ const Order = () => {
 
 
 
-  const handleEditOrder = (order) => {
+  const handleEditOrder = async (order) => {
+    // Load pantry items if not already loaded
+    if (pantryItems.length === 0) {
+      await fetchPantryItems();
+    }
+    
     setEditingOrder(order);
     
     // Ensure items have proper pantryItemId mapping
-    const mappedItems = (order.items || []).map(item => ({
-      pantryItemId: item.itemId || item.pantryItemId || '',
-      name: item.name || '',
-      quantity: item.quantity || 1,
-      unit: item.unit || 'pcs',
-      unitPrice: item.unitPrice || 0,
-      notes: item.notes || ''
-    }));
+    const mappedItems = (order.items || []).map(item => {
+      // Extract the actual ID from itemId or pantryItemId
+      let itemId = item.itemId || item.pantryItemId || '';
+      if (typeof itemId === 'object' && itemId._id) {
+        itemId = itemId._id;
+      }
+      
+      return {
+        pantryItemId: itemId,
+        name: item.name || '',
+        quantity: item.quantity || 1,
+        unit: item.unit || 'pcs',
+        unitPrice: item.unitPrice || 0,
+        notes: item.notes || ''
+      };
+    });
     
     setFormData({
       orderType: order.orderType || 'Kitchen to Pantry',
@@ -463,7 +477,7 @@ const Order = () => {
       guestName: order.guestName || '',
       packagingCharge: order.packagingCharge || 0,
       labourCharge: order.labourCharge || 0,
-      vendor: typeof order.vendorId === 'object' ? order.vendorId._id : (order.vendorId || '')
+      vendor: (order.vendorId && typeof order.vendorId === 'object') ? order.vendorId._id : (order.vendorId || '')
     });
     setShowOrderForm(true);
   };
