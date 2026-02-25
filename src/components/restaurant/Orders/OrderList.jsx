@@ -227,15 +227,19 @@ const OrderList = ({ orders, onViewOrder, onUpdateStatus, onProcessPayment, onRe
                             <span className="font-medium">-{formatCurrency(selectedOrder.discount.amount)}</span>
                           </div>
                         )}
-                        {(selectedOrder.gst > 0 || selectedOrder.sgst > 0) && (
+                        {(selectedOrder.gst > 0 || selectedOrder.sgst > 0 || selectedOrder.cgst > 0) && (
                           <>
                             <div className="flex justify-between text-gray-300">
-                              <span>GST (2.5%):</span>
+                              <span>GST ({selectedOrder.gstRate || 0}%):</span>
                               <span className="font-medium">{formatCurrency(selectedOrder.gst || 0)}</span>
                             </div>
                             <div className="flex justify-between text-gray-300">
-                              <span>SGST (2.5%):</span>
+                              <span>SGST ({selectedOrder.sgstRate || 0}%):</span>
                               <span className="font-medium">{formatCurrency(selectedOrder.sgst || 0)}</span>
+                            </div>
+                            <div className="flex justify-between text-gray-300">
+                              <span>CGST ({selectedOrder.cgstRate || 0}%):</span>
+                              <span className="font-medium">{formatCurrency(selectedOrder.cgst || 0)}</span>
                             </div>
                           </>
                         )}

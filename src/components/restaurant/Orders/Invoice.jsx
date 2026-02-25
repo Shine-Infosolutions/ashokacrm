@@ -192,9 +192,21 @@ const Invoice = ({ order, onClose, restaurantInfo }) => {
                           </td>
                           <td className="p-1 border-l border-black text-right text-xs">-{formatCurrency(discountAmount)}</td>
                         </tr>
+                        {(order.sgst > 0 || order.sgstRate > 0) && (
+                          <tr>
+                            <td className="p-1 text-right text-xs font-medium">SGST ({order.sgstRate || 0}%):</td>
+                            <td className="p-1 border-l border-black text-right text-xs">{formatCurrency(order.sgst || 0)}</td>
+                          </tr>
+                        )}
+                        {(order.cgst > 0 || order.cgstRate > 0) && (
+                          <tr>
+                            <td className="p-1 text-right text-xs font-medium">CGST ({order.cgstRate || 0}%):</td>
+                            <td className="p-1 border-l border-black text-right text-xs">{formatCurrency(order.cgst || 0)}</td>
+                          </tr>
+                        )}
                         <tr className="font-bold">
                           <td className="p-1 text-right text-xs">NET AMOUNT:</td>
-                          <td className="p-1 border-l border-black text-right text-xs">{formatCurrency(finalAmount)}</td>
+                          <td className="p-1 border-l border-black text-right text-xs">{formatCurrency(order.totalAmount || finalAmount)}</td>
                         </tr>
                       </tbody>
                     </table>

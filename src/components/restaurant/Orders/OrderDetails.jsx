@@ -108,12 +108,16 @@ const OrderDetails = ({ order, onUpdateStatus, onProcessPayment, onBack }) => {
                   </div>
                 )}
                 <div className="flex justify-between">
-                  <span className="text-gray-600">GST (2.5%):</span>
+                  <span className="text-gray-600">GST ({order.gstRate || 0}%):</span>
                   <span className="font-medium">{formatCurrency(order.gst || 0)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">SGST (2.5%):</span>
+                  <span className="text-gray-600">SGST ({order.sgstRate || 0}%):</span>
                   <span className="font-medium">{formatCurrency(order.sgst || 0)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">CGST ({order.cgstRate || 0}%):</span>
+                  <span className="font-medium">{formatCurrency(order.cgst || 0)}</span>
                 </div>
                 <div className="flex justify-between pt-2 border-t border-gray-300">
                   <span className="font-semibold text-gray-800">Total Amount:</span>
@@ -311,11 +315,11 @@ const OrderDetails = ({ order, onUpdateStatus, onProcessPayment, onBack }) => {
                     </td>
                   </tr>
                 )}
-                {(order.gst > 0 || order.sgst > 0) && (
+                {(order.gst > 0 || order.sgst > 0 || order.cgst > 0) && (
                   <>
                     <tr>
                       <td colSpan="5" className="px-4 py-2 text-right text-sm text-gray-600">
-                        GST (2.5%):
+                        GST ({order.gstRate || 0}%):
                       </td>
                       <td className="px-4 py-2 text-sm font-medium text-gray-900">
                         {formatCurrency(order.gst || 0)}
@@ -323,10 +327,18 @@ const OrderDetails = ({ order, onUpdateStatus, onProcessPayment, onBack }) => {
                     </tr>
                     <tr>
                       <td colSpan="5" className="px-4 py-2 text-right text-sm text-gray-600">
-                        SGST (2.5%):
+                        SGST ({order.sgstRate || 0}%):
                       </td>
                       <td className="px-4 py-2 text-sm font-medium text-gray-900">
                         {formatCurrency(order.sgst || 0)}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td colSpan="5" className="px-4 py-2 text-right text-sm text-gray-600">
+                        CGST ({order.cgstRate || 0}%):
+                      </td>
+                      <td className="px-4 py-2 text-sm font-medium text-gray-900">
+                        {formatCurrency(order.cgst || 0)}
                       </td>
                     </tr>
                   </>

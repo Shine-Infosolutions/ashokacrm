@@ -31,8 +31,10 @@ export default function RestaurantTaxInvoice() {
   if (!order) return <div className="min-h-screen bg-white p-4 flex items-center justify-center text-red-600">Order not found</div>;
 
   const subtotal = order.items.reduce((sum, item) => sum + (item.isFree ? 0 : item.price * item.quantity), 0);
-  const cgst = subtotal * 0.025;
-  const sgst = subtotal * 0.025;
+  const sgstRate = order.sgstRate || 0;
+  const cgstRate = order.cgstRate || 0;
+  const sgst = order.sgst || (subtotal * (sgstRate / 100));
+  const cgst = order.cgst || (subtotal * (cgstRate / 100));
   const total = subtotal + cgst + sgst;
 
   return (
@@ -136,11 +138,11 @@ export default function RestaurantTaxInvoice() {
                     <td className="p-1 border-l border-black text-right text-xs">₹{subtotal.toFixed(2)}</td>
                   </tr>
                   <tr>
-                    <td className="p-1 text-right text-xs font-medium">SGST (2.5%):</td>
+                    <td className="p-1 text-right text-xs font-medium">SGST ({sgstRate}%):</td>
                     <td className="p-1 border-l border-black text-right text-xs">₹{sgst.toFixed(2)}</td>
                   </tr>
                   <tr>
-                    <td className="p-1 text-right text-xs font-medium">CGST (2.5%):</td>
+                    <td className="p-1 text-right text-xs font-medium">CGST ({cgstRate}%):</td>
                     <td className="p-1 border-l border-black text-right text-xs">₹{cgst.toFixed(2)}</td>
                   </tr>
                   <tr className="bg-gray-200">

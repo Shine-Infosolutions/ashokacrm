@@ -4,7 +4,7 @@ import { useMergeTablesForOrder } from './useMergeTablesForOrder';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
-export const useCreateOrder = (onCreateOrder, sgstRate = 2.5, cgstRate = 2.5) => {
+export const useCreateOrder = (onCreateOrder, sgstRate = 0, cgstRate = 0) => {
   const [menuItems, setMenuItems] = useState([]);
   const [tables, setTables] = useState([]);
   const [orderItems, setOrderItems] = useState([]);
@@ -176,23 +176,28 @@ export const useCreateOrder = (onCreateOrder, sgstRate = 2.5, cgstRate = 2.5) =>
       }, 0);
 
       const orderData = {
-        items: orderItems.map(item => ({
-          menuId: item.menuId,
-          quantity: item.quantity,
-          variation: {
-            variationId: item.variation?._id || item.variation?.variationId
-          },
-          addons: item.addons?.filter(addon => addon._id).map(addon => ({
-            addonId: addon._id
-          })) || [],
-          timeToPrepare: item.timeToPrepare || 15
-        })),
+        items: orderItems.map(item => {
+          const variationId = item.variation?._id || item.variation?.variationId;
+          const cleanVariationId = typeof variationId === 'string' ? variationId.split('_')[0] : variationId;
+          
+          return {
+            menuId: item.menuId,
+            quantity: item.quantity,
+            variation: {
+              variationId: cleanVariationId
+            },
+            addons: item.addons?.filter(addon => addon._id).map(addon => ({
+              addonId: addon._id
+            })) || [],
+            timeToPrepare: item.timeToPrepare || 15
+          };
+        }),
         customerName: customerName.trim(),
         customerPhone: customerPhone.trim() || undefined,
         guestCount: parseInt(guestCount),
         subtotal: Number(subtotal) || 0,
-        sgstRate: Number(sgstRate) || 2.5,
-        cgstRate: Number(cgstRate) || 2.5
+        sgstRate: sgstRate === '' ? 0 : Number(sgstRate),
+        cgstRate: cgstRate === '' ? 0 : Number(cgstRate)
       };
       
       if (tableId) {
